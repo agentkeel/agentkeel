@@ -1,6 +1,6 @@
 <div align="center">
 
-<img alt="AgentKeel" src="docs/assets/AgentKeel_Logo_Animated.gif" width="420">
+<img alt="AgentKeel" src="AgentKeel_Logo_Animated.gif" width="420">
 
 ### The open-source stability layer for AI agents
 
