@@ -1,0 +1,26 @@
+name: Welcome
+
+on:
+  issues:
+    types: [opened]
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/first-interaction@1c4688942c71f71d4f5502a26ea67c331730fa4d # v3.1.0
+        with:
+          issue_message: |
+            👋 Thanks for opening your first issue in AgentKeel! A maintainer will reply within 72 hours.
+            While you wait: please make sure there are no secrets in logs or policy snippets you shared.
+          pr_message: |
+            🎉 Thanks for your first pull request to AgentKeel!
+            Quick checklist: PR title in Conventional Commits form, every commit signed off (`git commit -s`),
+            and tests for your change. See [CONTRIBUTING.md](https://github.com/agentkeel/agentkeel/blob/main/CONTRIBUTING.md).
+            A maintainer will review within 72 hours.

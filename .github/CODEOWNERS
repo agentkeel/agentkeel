@@ -1,0 +1,10 @@
+# Default owner for everything. Add area owners as maintainers join.
+*                         @ASHUTOSH-KUMAR-RAO
+
+# L1 critical packages: changes always need a maintainer review
+/packages/policy/         @ASHUTOSH-KUMAR-RAO
+/packages/core/           @ASHUTOSH-KUMAR-RAO
+/packages/spec/           @ASHUTOSH-KUMAR-RAO
+/.github/                 @ASHUTOSH-KUMAR-RAO
+/SECURITY.md              @ASHUTOSH-KUMAR-RAO
+/GOVERNANCE.md            @ASHUTOSH-KUMAR-RAO

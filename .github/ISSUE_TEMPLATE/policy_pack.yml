@@ -1,0 +1,24 @@
+name: Policy pack proposal
+description: Propose a new official policy pack or rules for an existing one
+title: "pack: "
+labels: ["area/packs", "needs-triage"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Pack name
+      placeholder: "cloud-cli"
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risky actions this pack should catch
+      description: List tools/commands and what should be blocked or need approval.
+    validations:
+      required: true
+  - type: textarea
+    id: rules
+    attributes:
+      label: Draft rules (YAML)
+      render: yaml

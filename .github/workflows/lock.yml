@@ -1,0 +1,27 @@
+name: Lock closed threads
+
+on:
+  schedule:
+    - cron: "5 2 * * 0"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+  discussions: write
+
+concurrency:
+  group: lock-threads
+
+jobs:
+  lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dessant/lock-threads@89ae32b08ed1a541efecbab17912962a5e38981c # v6.0.2
+        with:
+          issue-inactive-days: 60
+          pr-inactive-days: 60
+          issue-comment: >
+            This issue has been locked because it was closed for 60 days.
+            Please open a new issue for related problems and link to this one.
+          process-only: issues, prs

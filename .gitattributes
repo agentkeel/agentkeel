@@ -1,0 +1,9 @@
+* text=auto eol=lf
+*.png binary
+*.gif binary
+*.jpg binary
+*.ico binary
+*.db binary
+pnpm-lock.yaml linguist-generated=true -diff
+uv.lock linguist-generated=true -diff
+docs/** linguist-documentation

@@ -1,0 +1,32 @@
+name: Feature request
+description: Suggest a new capability or improvement
+title: "feat: "
+labels: ["type/feature", "needs-triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to do, and what gets in the way today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How should it work? Example policy YAML, CLI usage or API calls help a lot.
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Loop stage
+      options: [Protect, Observe, Learn, Test, Shadow, Build, Not sure]
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contribution
+      options:
+        - label: I would like to work on this

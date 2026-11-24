@@ -1,0 +1,10 @@
+{
+  "packages/spec": "0.0.1",
+  "packages/policy": "0.0.1",
+  "packages/core": "0.0.1",
+  "packages/sdk": "0.0.1",
+  "packages/hub": "0.0.1",
+  "packages/mcp-proxy": "0.0.1",
+  "packages/cli": "0.0.1",
+  "python/agentkeel": "0.0.1"
+}
