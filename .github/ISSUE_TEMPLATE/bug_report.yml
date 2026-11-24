@@ -1,0 +1,56 @@
+name: Bug report
+description: Something does not work as documented
+title: "bug: "
+labels: ["type/bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Security problems must go to the private
+        [security advisory form](https://github.com/agentkeel/agentkeel/security/advisories/new) instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Minimal policy file and code if possible. Remove any secrets.
+      render: markdown
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of `agentkeel doctor`
+      render: text
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [Policy engine, SDK (TypeScript), SDK (Python), MCP proxy, Claude Code hooks, Approvals / notifiers, Dashboard, CLI, Learn / Test / Shadow, Docs, Other]
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: AgentKeel version
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: OS and runtime
+      placeholder: "Ubuntu 24.04, Node 22.12 / Python 3.12"
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

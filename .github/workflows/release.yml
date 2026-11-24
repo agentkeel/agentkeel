@@ -1,0 +1,117 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: Release PR and tags
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      releases_created: ${{ steps.rp.outputs.releases_created }}
+      paths_released: ${{ steps.rp.outputs.paths_released }}
+      cli_tag: ${{ steps.rp.outputs['packages/cli--tag_name'] }}
+    steps:
+      - uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
+        with: { egress-policy: audit }
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - id: guard
+        run: echo "ready=$([ -f packages/cli/package.json ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - id: rp
+        if: steps.guard.outputs.ready == 'true'
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          # A GitHub App or fine-grained token lets CI run on the release PR.
+          # PRs opened with the default GITHUB_TOKEN do not trigger other workflows.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish-npm:
+    name: Publish to npm (trusted publishing + provenance)
+    needs: release-please
+    if: needs.release-please.outputs.releases_created == 'true'
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write      # OIDC for npm trusted publishing; no NPM_TOKEN stored
+    steps:
+      - uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
+        with: { egress-policy: audit }
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with: { node-version: 24, registry-url: "https://registry.npmjs.org", cache: pnpm }
+      - run: npm install -g npm@^11.5.1   # trusted publishing needs npm >= 11.5.1
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Publish released npm packages
+        env:
+          PATHS: ${{ needs.release-please.outputs.paths_released }}
+        run: |
+          for p in $(echo "$PATHS" | jq -r '.[]'); do
+            if [ -f "$p/package.json" ] && [ "$(jq -r '.private // false' "$p/package.json")" != "true" ]; then
+              echo "Publishing $p"
+              (cd "$p" && pnpm pack --pack-destination ./.pack && npm publish ./.pack/*.tgz --access public --provenance)
+            fi
+          done
+
+  publish-pypi:
+    name: Publish to PyPI (Trusted Publishing)
+    needs: release-please
+    if: needs.release-please.outputs.releases_created == 'true' && contains(needs.release-please.outputs.paths_released, 'python/agentkeel')
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
+        with: { egress-policy: audit }
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+      - run: uv build
+        working-directory: python/agentkeel
+      - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
+        with:
+          packages-dir: python/agentkeel/dist
+          attestations: true
+
+  sbom:
+    name: SBOM (CycloneDX)
+    needs: release-please
+    if: needs.release-please.outputs.releases_created == 'true' && needs.release-please.outputs.cli_tag != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
+        with: { egress-policy: audit }
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
+        with:
+          format: cyclonedx-json
+          output-file: agentkeel-sbom.cdx.json
+          upload-artifact: true
+      - name: Attach SBOM to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.release-please.outputs.cli_tag }}
+        run: gh release upload "$TAG" agentkeel-sbom.cdx.json --clobber --repo "$GITHUB_REPOSITORY"

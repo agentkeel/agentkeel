@@ -1,0 +1,36 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "node",
+  "include-component-in-tag": true,
+  "bump-minor-pre-major": true,
+  "bump-patch-for-minor-pre-major": false,
+  "pull-request-title-pattern": "chore${scope}: release${component} ${version}",
+  "changelog-sections": [
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug Fixes" },
+    { "type": "perf", "section": "Performance" },
+    { "type": "deps", "section": "Dependencies" },
+    { "type": "revert", "section": "Reverts" },
+    { "type": "docs", "section": "Documentation", "hidden": true },
+    { "type": "chore", "hidden": true },
+    { "type": "test", "hidden": true },
+    { "type": "ci", "hidden": true },
+    { "type": "build", "hidden": true },
+    { "type": "refactor", "hidden": true }
+  ],
+  "packages": {
+    "packages/spec":       { "component": "spec" },
+    "packages/policy":     { "component": "policy" },
+    "packages/core":       { "component": "core" },
+    "packages/sdk":        { "component": "sdk" },
+    "packages/hub":        { "component": "hub" },
+    "packages/mcp-proxy":  { "component": "mcp-proxy" },
+    "packages/cli":        { "component": "agentkeel" },
+    "python/agentkeel":    { "component": "agentkeel-python", "release-type": "python" }
+  },
+  "plugins": [
+    { "type": "node-workspace" },
+    { "type": "linked-versions", "groupName": "agentkeel-core",
+      "components": ["spec", "policy", "core", "sdk", "hub", "mcp-proxy", "agentkeel"] }
+  ]
+}

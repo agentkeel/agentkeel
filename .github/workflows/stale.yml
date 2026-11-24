@@ -1,0 +1,33 @@
+name: Stale
+
+on:
+  schedule:
+    - cron: "17 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@4391f3da665fdf50b6810c1a66712fb9ba21aa93 # v11.0.0
+        with:
+          only-labels: needs-info
+          days-before-stale: 14
+          days-before-close: 7
+          stale-issue-label: stale
+          stale-pr-label: stale
+          exempt-issue-labels: accepted,security,type/security,priority/critical,good first issue
+          exempt-pr-labels: accepted,security
+          stale-issue-message: >
+            This issue is waiting for more information and has had no activity for 14 days.
+            It will close in 7 days unless there is new activity. Thank you!
+          close-issue-message: >
+            Closing for now because we could not get the information we needed.
+            Comment with the details and we will happily reopen it.
+          stale-pr-message: >
+            This pull request has been waiting for changes for 14 days. It will close in 7 days
+            unless updated. You can always reopen it.

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or setup help
+    url: https://github.com/agentkeel/agentkeel/discussions/categories/q-a
+    about: Ask in Discussions so others can find the answer too.
+  - name: Security vulnerability
+    url: https://github.com/agentkeel/agentkeel/security/advisories/new
+    about: Report privately. Never open a public issue for security problems.
